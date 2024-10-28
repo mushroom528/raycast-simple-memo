@@ -51,7 +51,7 @@ export default function Command() {
           key={memo.id}
           icon={Icon.Document}
           title={memo.title}
-          accessories={[{ text: memo.title }]}
+          accessories={[{ text: memo.content }]}
           detail={
             <List.Item.Detail
               markdown={memo.content}

@@ -1,18 +1,35 @@
-import { Form, ActionPanel, Action, showToast } from "@raycast/api";
+import { Form, ActionPanel, Action, showToast, Toast, popToRoot } from "@raycast/api";
+import { useForm, FormValidation } from "@raycast/utils";
 import { MemoStorage } from "./storage/memo-storage";
 
+interface CreateMemoForm {
+  title: string;
+  desc: string;
+}
+
 export default function Command() {
-
-  async function handleSubmit(memo: { title: string, desc: string, tag: string[]}) {
-    try {
-      await MemoStorage.createMemo(memo.title, memo.desc, memo.tag);
-      showToast({ title: "Memo saved successfully", message: "success" });
-
-    } catch (error) {
-      showToast({title: "Error saving memo", message: "failure"})
-    }
-
-  }
+  const { handleSubmit, itemProps } = useForm<CreateMemoForm>({
+    onSubmit: async (values) => {
+      try {
+        await MemoStorage.createMemo(values.title, values.desc);
+        await showToast({
+          style: Toast.Style.Success,
+          title: "Memo saved successfully",
+        });
+        await popToRoot();
+      } catch (error) {
+        await showToast({
+          style: Toast.Style.Failure,
+          title: "Failed to save memo",
+          message: error instanceof Error ? error.message : "Unknown error occurred",
+        });
+      }
+    },
+    validation: {
+      title: FormValidation.Required,
+      desc: FormValidation.Required,
+    },
+  });
 
   return (
     <Form
@@ -22,16 +39,13 @@ export default function Command() {
         </ActionPanel>
       }
     >
-      <Form.TextField id="title" title="Title" placeholder="Memo Title" />
-      <Form.TextArea 
-        id="desc"
-        title="description"
-        placeholder="Meme Content (e.g: **bold**)"
+      <Form.TextField {...itemProps.title} title="Title" placeholder="Memo Title" />
+      <Form.TextArea
+        {...itemProps.desc}
+        title="Description"
+        placeholder="Memo Content (e.g: **bold**)"
         enableMarkdown
       />
-      <Form.TagPicker id="tag" title="tag">
-        <Form.TagPicker.Item value="tagpicker-item" title="Tag Picker Item" />
-      </Form.TagPicker>
     </Form>
   );
 }

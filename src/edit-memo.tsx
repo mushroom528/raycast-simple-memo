@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Form, showToast, Toast, useNavigation, Icon } from "@raycast/api";
+import { Action, ActionPanel, Form, useNavigation, Icon, popToRoot, showToast, Toast } from "@raycast/api";
 import { useState } from "react";
 import { MemoStorage } from "./storage/memo-storage";
 import { Memo } from "./storage/types";
@@ -22,27 +22,24 @@ export default function Command({ memo }: EditMemoProps) {
     onSubmit: async (values) => {
       try {
         setIsLoading(true);
-        
+
         const updatedMemo: Memo = {
           ...memo,
           title: values.title,
           content: values.content,
-          tags: values.tags ? values.tags.split(",").map(tag => tag.trim()) : [],
         };
 
         await MemoStorage.updateMemo(memo.id, updatedMemo);
-        
         await showToast({
           style: Toast.Style.Success,
           title: "Memo updated successfully",
         });
-
-        pop();
+        await popToRoot();
       } catch (error) {
         await showToast({
           style: Toast.Style.Failure,
           title: "Failed to update memo",
-          message: error instanceof Error ? error.message : "An unknown error occurred",
+          message: error instanceof Error ? error.message : "Unknown error occurred",
         });
       } finally {
         setIsLoading(false);
@@ -51,7 +48,6 @@ export default function Command({ memo }: EditMemoProps) {
     initialValues: {
       title: memo.title,
       content: memo.content,
-      tags: memo.tags?.join(", ") || "",
     },
     validation: {
       title: (value) => {
@@ -71,43 +67,21 @@ export default function Command({ memo }: EditMemoProps) {
     <Form
       actions={
         <ActionPanel>
-          <Action.SubmitForm
-            title="Update Memo"
-            onSubmit={handleSubmit}
-            icon={Icon.Pencil}
-          />
+          <Action.SubmitForm title="Update Memo" onSubmit={handleSubmit} icon={Icon.Pencil} />
           <Action
             title="Reset"
             icon={Icon.ArrowCounterClockwise}
             shortcut={{ modifiers: ["cmd"], key: "r" }}
             onAction={reset}
           />
-          <Action
-            title="Cancel"
-            icon={Icon.Xmark}
-            shortcut={{ modifiers: ["cmd"], key: "." }}
-            onAction={pop}
-          />
+          <Action title="Cancel" icon={Icon.Xmark} shortcut={{ modifiers: ["cmd"], key: "." }} onAction={pop} />
         </ActionPanel>
       }
       isLoading={isLoading}
     >
-      <Form.TextField
-        {...itemProps.title}
-        title="Title"
-        placeholder="Enter memo title"
-      />
-      <Form.TextArea
-        {...itemProps.content}
-        title="Content"
-        placeholder="Enter memo content"
-        enableMarkdown
-      />
-      <Form.TextField
-        {...itemProps.tags}
-        title="Tags"
-        placeholder="Enter tags separated by commas"
-      />
+      <Form.TextField {...itemProps.title} title="Title" placeholder="Enter memo title" />
+      <Form.TextArea {...itemProps.content} title="Content" placeholder="Enter memo content" enableMarkdown />
+      <Form.TextField {...itemProps.tags} title="Tags" placeholder="Enter tags separated by commas" />
     </Form>
   );
 }
