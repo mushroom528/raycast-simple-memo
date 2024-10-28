@@ -30,12 +30,21 @@
       "title": "Quick Memo",
       "subtitle": "Quick Memo",
       "description": "Quick Memo",
-      "mode": "no-view"
+      "mode": "no-view",
+      "arguments": [
+        {
+          "name": "content",
+          "placeholder": "Enter memo content",
+          "type": "text",
+          "required": false
+        }
+      ]
     }
   ],
   "dependencies": {
     "@raycast/api": "^1.84.3",
     "@raycast/utils": "^1.17.0",
+    "date-fns": "^4.1.0",
     "nanoid": "^5.0.7"
   },
   "devDependencies": {

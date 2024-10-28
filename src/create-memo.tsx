@@ -1,11 +1,7 @@
 import { Form, ActionPanel, Action, showToast } from "@raycast/api";
-import { useState, useEffect } from "react";
 import { MemoStorage } from "./storage/memo-storage";
-import { Memo } from "./storage/types";
 
 export default function Command() {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [memos, setMemos] = useState<Memo[]>([]);
 
   async function handleSubmit(memo: { title: string, desc: string, tag: string[]}) {
     try {

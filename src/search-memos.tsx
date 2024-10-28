@@ -1,7 +1,10 @@
-import { ActionPanel, Detail, List, Action, Icon, showToast } from "@raycast/api";
+import { ActionPanel, List, Action, Icon, showToast } from "@raycast/api";
 import { useState, useEffect } from "react";
 import { MemoStorage } from "./storage/memo-storage";
 import { Memo } from "./storage/types";
+import { format } from "date-fns";
+import CreateMemo from "./create-memo";
+import EditMemo from "./edit-memo"
 
 export default function Command() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -25,8 +28,24 @@ export default function Command() {
     }
   }
 
+  async function handleDeleteMemo(memoId: string) {
+    try {
+      await MemoStorage.deleteMemo(memoId);
+      setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== memoId));
+      showToast({
+        title: "Memo deleted successfully",
+      });
+    } catch (error) {
+      showToast({
+        title: "Error deleting memo",
+        message: error instanceof Error ? error.message : "Unknown error occurred",
+      });
+    }
+  }
+
+
   return (
-    <List isShowingDetail searchBarPlaceholder="Search Memo...">
+    <List isShowingDetail searchBarPlaceholder="Search Memo..." isLoading={isLoading}>
       {memos.map(memo => (
         <List.Item
           key={memo.id}
@@ -43,11 +62,14 @@ export default function Command() {
                   <List.Item.Detail.Metadata.Separator />
                   <List.Item.Detail.Metadata.Label title="Content type" text="Text" />
                   <List.Item.Detail.Metadata.Separator />
-                  <List.Item.Detail.Metadata.Label title="Times copied" text="60" />
+                  <List.Item.Detail.Metadata.Label 
+                    title="Created" 
+                    text={format(new Date(memo.createdAt), "MMM dd, yyyy 'at' h:mm:ss a")}
+                  />
                   <List.Item.Detail.Metadata.Separator />
                   <List.Item.Detail.Metadata.Label 
-                    title="Last copied" 
-                    text="Yesterday at 6:14:45 PM" 
+                    title="Updated" 
+                    text={format(new Date(memo.updatedAt), "MMM dd, yyyy 'at' h:mm:ss a")}
                   />
                 </List.Item.Detail.Metadata>
               }
@@ -55,10 +77,37 @@ export default function Command() {
           }
           actions={
             <ActionPanel>
-              <Action.CopyToClipboard
-                title="Copy to Clipboard"
-                content={memo.content}
-              />
+              <ActionPanel.Section>
+                <Action.CopyToClipboard
+                  title="Copy to Clipboard"
+                  content={memo.content}
+                />
+              </ActionPanel.Section>
+              
+              <ActionPanel.Section>
+                <Action.Push
+                  title="Create Memo"
+                  target={<CreateMemo />}
+                  icon={Icon.Plus}
+                  shortcut={{ modifiers: ["cmd"], key: "n" }}
+                />
+                <Action.Push
+                  title="Edit Memo"
+                  target={<EditMemo memo={memo} />}
+                  icon={Icon.Pencil}
+                  shortcut={{ modifiers: ["cmd"], key: "e" }}
+                />
+              </ActionPanel.Section>
+              
+              <ActionPanel.Section>
+                <Action
+                  title="Delete Memo"
+                  icon={Icon.Trash}
+                  style={Action.Style.Destructive}
+                  onAction={() => handleDeleteMemo(memo.id)}
+                  shortcut={{ modifiers: ["cmd"], key: "backspace" }}
+                />
+              </ActionPanel.Section>
             </ActionPanel>
           }
         />

@@ -1,17 +1,52 @@
-import { ActionPanel, Detail, List, Action, Icon } from "@raycast/api";
+import { showToast, Toast } from "@raycast/api";
+import { MemoStorage } from "./storage/memo-storage";
+import { format } from "date-fns";
 
-export default function Command() {
-  return (
-    <List>
-      <List.Item
-        icon={Icon.Bird}
-        title="Greeting"
-        actions={
-          <ActionPanel>
-            <Action.Push title="Show Details" target={<Detail markdown="# Hey! 👋" />} />
-          </ActionPanel>
-        }
-      />
-    </List>
-  );
+
+export default async function Command(props: { arguments: { content: string; } }) {
+
+  function generateMemoTitle(content: string): string {
+    const dateStr = format(new Date(), "MMM dd, yyyy 'at' h:mm:ss a")
+    
+    // 내용의 첫 부분을 미리보기로 사용
+    const preview = content.trim().split('\n')[0].slice(0, 20);
+    const previewText = preview.length < content.trim().split('\n')[0].length 
+      ? `${preview}...` 
+      : preview;
+  
+    return `${dateStr} - ${previewText || 'Quick Memo'}`;
+  }
+
+  try {
+    const { content } = props.arguments;
+    
+    // Validate input
+    if (!content?.trim()) {
+      await showToast({
+        style: Toast.Style.Failure,
+        title: "Invalid Input",
+        message: "Memo content cannot be empty"
+      });
+      return
+    }
+
+    const title = generateMemoTitle(content);
+
+    // Save memo
+    await MemoStorage.createMemo(title, content, []);
+
+    // Show success message
+    await showToast({
+      style: Toast.Style.Success,
+      title: "Memo Saved",
+      message: "Your memo has been saved successfully"
+    });
+  } catch (error) {
+    console.error("Error saving memo:", error);
+    await showToast({
+      style: Toast.Style.Failure,
+      title: "Error Saving Memo",
+      message: error instanceof Error ? error.message : "An unknown error occurred"
+    });
+  }
 }

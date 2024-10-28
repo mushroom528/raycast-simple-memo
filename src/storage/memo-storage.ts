@@ -24,7 +24,8 @@ export class MemoStorage {
         title,
         content,
         tags,
-        createdAt: new Date().toISOString(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
 
       const updatedMemos = [...memos, newMemo];
@@ -49,7 +50,7 @@ export class MemoStorage {
       const updatedMemo = {
         ...memos[memoIndex],
         ...updates,
-        updatedAt: new Date().toISOString(),
+        updatedAt: new Date(),
       };
 
       memos[memoIndex] = updatedMemo;

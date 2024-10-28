@@ -3,5 +3,6 @@ export interface Memo {
     title: string;
     content: string;
     tags: string[];
-    createdAt: string;
+    createdAt: Date;
+    updatedAt: Date;
 }
