@@ -1,3 +1,13 @@
 # Simple Memo
 
-A lightweight, keyboard-driven note-taking extension for instant  searching. Create, edit, and organize your notes with markdown support and quick search. Store and manage your memos locally without any external dependencies - your perfect second brain in Raycast.
+Create and manage your memos directly from Raycast with markdown support.
+
+Key features:
+
+- Create memos with full markdown formatting
+- Quick memo creation without opening the editor
+- Search through your saved memos instantly
+
+To create a quick memo, just type your content after the Quick Memo command.
+For a full-featured memo editor, use the Create Memo command.
+Find your memos anytime using the Search Memos command.
