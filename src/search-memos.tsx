@@ -4,7 +4,7 @@ import { MemoStorage } from "./storage/memo-storage";
 import { Memo } from "./storage/types";
 import { format } from "date-fns";
 import CreateMemo from "./create-memo";
-import EditMemo from "./edit-memo"
+import EditMemo from "./edit-memo";
 
 export default function Command() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -43,10 +43,9 @@ export default function Command() {
     }
   }
 
-
   return (
     <List isShowingDetail searchBarPlaceholder="Search Memo..." isLoading={isLoading}>
-      {memos.map(memo => (
+      {memos.map((memo) => (
         <List.Item
           key={memo.id}
           icon={Icon.Document}
@@ -62,13 +61,13 @@ export default function Command() {
                   <List.Item.Detail.Metadata.Separator />
                   <List.Item.Detail.Metadata.Label title="Content type" text="Text" />
                   <List.Item.Detail.Metadata.Separator />
-                  <List.Item.Detail.Metadata.Label 
-                    title="Created" 
+                  <List.Item.Detail.Metadata.Label
+                    title="Created"
                     text={format(new Date(memo.createdAt), "MMM dd, yyyy 'at' h:mm:ss a")}
                   />
                   <List.Item.Detail.Metadata.Separator />
-                  <List.Item.Detail.Metadata.Label 
-                    title="Updated" 
+                  <List.Item.Detail.Metadata.Label
+                    title="Updated"
                     text={format(new Date(memo.updatedAt), "MMM dd, yyyy 'at' h:mm:ss a")}
                   />
                 </List.Item.Detail.Metadata>
@@ -78,12 +77,9 @@ export default function Command() {
           actions={
             <ActionPanel>
               <ActionPanel.Section>
-                <Action.CopyToClipboard
-                  title="Copy to Clipboard"
-                  content={memo.content}
-                />
+                <Action.CopyToClipboard title="Copy to Clipboard" content={memo.content} />
               </ActionPanel.Section>
-              
+
               <ActionPanel.Section>
                 <Action.Push
                   title="Create Memo"
@@ -98,7 +94,7 @@ export default function Command() {
                   shortcut={{ modifiers: ["cmd"], key: "e" }}
                 />
               </ActionPanel.Section>
-              
+
               <ActionPanel.Section>
                 <Action
                   title="Delete Memo"
