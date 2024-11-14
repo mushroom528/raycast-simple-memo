@@ -21,7 +21,6 @@ export default function Command() {
         await showFailureToast(error, {
           title: "Failed to save memo",
         });
-        ㄱ;
       }
     },
     validation: {
